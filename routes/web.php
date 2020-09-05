@@ -18,4 +18,8 @@ use Illuminate\Support\Facades\Route;
 });*/
 Route::get('/', 'HomeController@index');
 Route::any('/register','UsersController@register');
-//Route::get('/','MainController@index');
+Route::any('/login','UsersController@login');
+Route::get('/logout','UsersController@logout');
+
+Route::any('/profile','UsersController@profile');
+
