@@ -92,7 +92,7 @@ class UsersController extends Controller
     		$longitude 		=  $currentUser->longitude;
     		$matchedUsers  	= User::whereRaw("( 6371 * acos ( cos ( radians(".$latitude.") ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(".$longitude.") ) + sin ( radians(".$latitude.") ) * sin( radians( latitude ) ) ) <= 5)")->where('id','!=',$currentUser->id)->get();
     		
-    		return view('users.matchedUsers',array('matchedUsers' => $matchedUsers));
+    		return view('users.matchedUsers',array('matchedUsers' => $matchedUsers,'latitude' => $latitude,'longitude' => $longitude));
     }
 
     
