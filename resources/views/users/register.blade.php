@@ -3,7 +3,7 @@
   <div id="right_container">
     <div class="registration_box">
       <h2>New User Registration</h2>
-      <form id="signupForm" action="{{ url('/register') }}" method="post">{{ csrf_field() }}
+      <form id="signupForm" action="{{ url('/register') }}" method="post" enctype="multipart/form-data">{{ csrf_field() }}
         <table width="100%">
           <tr>
             <td align="left" valign="top" class="body"><strong> Name:</strong></td>
@@ -39,6 +39,11 @@
                       </select>
             </td>
           </tr>
+
+          <tr>
+                        <td align="left" valign="top" class="body"><strong> Profile Picture: * </strong></td>
+                        <td align="left" valign="top"><input autocomplete="off" id="photo" name="photo" type="file" multiple="multiple" style="width:220px; font-size: 14px" /></td>
+                    </tr>
           
           <tr>
             <td></td>

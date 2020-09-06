@@ -22,4 +22,5 @@ Route::any('/login','UsersController@login');
 Route::get('/logout','UsersController@logout');
 
 Route::any('/profile','UsersController@profile');
+Route::any('/matchedUsers','UsersController@matchedUsers');
 

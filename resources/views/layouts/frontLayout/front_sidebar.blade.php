@@ -53,6 +53,7 @@ use App\User;
                 <h2>Welcome </h2>
                 <div class="link_detail">
                     <p class="link"><a href="{{ url('/profile') }}">My Profile</a></p>
+                    <p class="link"><a href="{{ url('/matchedUsers') }}">Other Profiles</a></p>
                     <p class="link"><a href="{{ url('/logout') }}">Logout</a></p>
                 </div>
             </div>

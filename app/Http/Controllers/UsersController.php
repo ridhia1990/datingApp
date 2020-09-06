@@ -6,6 +6,10 @@ use Illuminate\Http\Request;
 use App\User;
 use Auth;
 use Session;
+use File;
+use Image;
+use Location;
+
 
 
 class UsersController extends Controller
@@ -21,13 +25,39 @@ class UsersController extends Controller
     		$user->password = bcrypt($data['password']);
     		$user->dobirth = $data['dobirth'];
     		$user->gender = $data['gender'];
-    		$user->latitude = '';
-    		$user->longitude = '';
-			//echo "<pre>"; print_r($data); die;
-    		$user->save();
-    		return redirect('/');
-    	}
-    	
+    		$user->latitude = 0;
+    		$user->longitude = 0;
+			//echo "<pre>"; print_r($user); die;
+			if($request->hasFile('photo')){
+                $files 		= $request->file('photo');           
+				$extension 	= $files->getClientOriginalExtension();
+				// Give Random name to image and add its extension
+				$fileName 			= rand(111,99999).'.'.$extension;
+				$originalImage 		= $request->file('photo');
+				$thumbnailImage 	= Image::make($originalImage);
+				$thumbnailPath 		= public_path().'/images/frontend_images/photos/';
+				//$originalPath = public_path().'/images/';
+				//$thumbnailImage->save($originalPath.time().$originalImage->getClientOriginalName());
+				$thumbnailImage->resize(600,600);
+				$thumbnailImage->save($thumbnailPath.$fileName);
+                
+            }
+			$user->photo = $fileName;
+
+			//user location
+			$clientIP = $request->ip();
+			$location = \Location::get($clientIP);
+
+			if($location){
+				$user->latitude 	= $location->latitude;
+    			$user->longitude 	= $location->longitude;
+			}
+			//dd($location);
+
+            $user->save();
+    		return redirect('/'); 
+        }
+    		
     	return view('users.register');
     }
 
@@ -53,25 +83,19 @@ class UsersController extends Controller
         Auth::logout();
         Session::forget('frontSession');
         Session::forget('current_url');
-        return redirect()->action('IndexController@index');
+        return redirect()->action('HomeController@index');
     }
 
     public function profile(){
 
-        // Check if dating profile already exists and under review
-       	
-        return view('users.profile',array('userProfile' => Auth::user()));
+    		return view('users.profile',array('userProfile' => Auth::user()));
     }
 
-    public function viewProfile($username){
-        $userCount = User::where('username',$username)->count();
-        if($userCount>0){
-            $userDetails = User::with('details')->with('photos')->where('username',$username)->first();
-            $userDetails = json_decode(json_encode($userDetails));
-            /*echo "<pre>"; print_r($userDetails); die;*/
-        }else{
-            abort(404);    
-        } 
-        return view('users.profile')->with(compact('userDetails'));
+    public function matchedUsers(){
+
+    		$matchedUsers  = array('' => '');
+    		return view('users.matchedUsers',array('matchedUsers' => $matchedUsers));
     }
+
+    
 }
