@@ -38,7 +38,7 @@ class UsersController extends Controller
 				$thumbnailPath 		= public_path().'/images/frontend_images/photos/';
 				//$originalPath = public_path().'/images/';
 				//$thumbnailImage->save($originalPath.time().$originalImage->getClientOriginalName());
-				$thumbnailImage->resize(600,600);
+				$thumbnailImage->resize(255,255);
 				$thumbnailImage->save($thumbnailPath.$fileName);
                 
             }
@@ -52,7 +52,6 @@ class UsersController extends Controller
 				$user->latitude 	= $location->latitude;
     			$user->longitude 	= $location->longitude;
 			}
-			//dd($location);
 
             $user->save();
     		return redirect('/'); 
@@ -64,16 +63,11 @@ class UsersController extends Controller
     public function login(Request $request){
         if($request->isMethod('post')){
             $data = $request->input();
-            //echo "<pre>"; print_r($data); die;
             if(Auth::attempt(['email'=>$data['email'],'password'=>$data['password']])){
-                /*echo "success"; die;*/
-				//$user_id = Auth::User()->id;
-            // echo "<pre>"; print_r(Auth::User()); die;
+              
                     Session::put('frontSession',Auth::User()->name);
-                    return redirect('/profile');
-                
+                    return redirect('/profile');                
             }else{
-                /*echo "failed"; die;*/
                 return redirect::back()->with('flash_message_error','Invalid Username or Password');
             }
         }
@@ -93,7 +87,11 @@ class UsersController extends Controller
 
     public function matchedUsers(){
 
-    		$matchedUsers  = array('' => '');
+    		$currentUser 	= Auth::user();
+    		$latitude 		=  $currentUser->latitude;
+    		$longitude 		=  $currentUser->longitude;
+    		$matchedUsers  	= User::whereRaw("( 6371 * acos ( cos ( radians(".$latitude.") ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(".$longitude.") ) + sin ( radians(".$latitude.") ) * sin( radians( latitude ) ) ) <= 5)")->where('id','!=',$currentUser->id)->get();
+    		
     		return view('users.matchedUsers',array('matchedUsers' => $matchedUsers));
     }
 
